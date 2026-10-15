@@ -1,29 +1,20 @@
-import { parseArgs } from "node:util";
 import { readPackageVersion } from "../version.js";
+import type { CliContext } from "./context.js";
 import { CliError } from "./errors.js";
 import { helpText } from "./help.js";
+import { commands } from "./registry.js";
 
-export interface CliContext {
-  write(text: string): void;
-  writeError(text: string): void;
-}
+export type { CliContext } from "./context.js";
 
-interface ParsedInvocation {
-  values: {
-    help?: boolean | undefined;
-    version?: boolean | undefined;
-  };
-  positionals: string[];
-}
-
-type ParseOutcome = { ok: true; invocation: ParsedInvocation } | { ok: false; message: string };
-
-export function main(argv: readonly string[], ctx: CliContext): number {
+export async function main(argv: readonly string[], ctx: CliContext): Promise<number> {
   try {
-    return run(argv, ctx);
+    return await run(argv, ctx);
   } catch (error) {
     if (error instanceof CliError) {
       ctx.writeError(`error: ${error.message}\n`);
+      if (error.exitCode === 2) {
+        ctx.writeError(`\n${helpText(commands)}`);
+      }
       return error.exitCode;
     }
 
@@ -32,61 +23,29 @@ export function main(argv: readonly string[], ctx: CliContext): number {
   }
 }
 
-function run(argv: readonly string[], ctx: CliContext): number {
-  const outcome = parseArguments(argv);
-  if (!outcome.ok) {
-    return failWithUsage(ctx, outcome.message);
-  }
+async function run(argv: readonly string[], ctx: CliContext): Promise<number> {
+  const [first, ...rest] = argv;
 
-  const { values, positionals } = outcome.invocation;
-
-  if (values.help === true) {
-    ctx.write(helpText());
+  if (first === undefined || first === "--help" || first === "-h") {
+    ctx.write(helpText(commands));
     return 0;
   }
 
-  if (values.version === true) {
+  if (first === "--version" || first === "-v") {
     ctx.write(`${readPackageVersion()}\n`);
     return 0;
   }
 
-  const [command] = positionals;
+  if (first.startsWith("-")) {
+    throw new CliError(`Unknown option '${first}'`, 2);
+  }
+
+  const command = commands.find((candidate) => candidate.name === first);
   if (command === undefined) {
-    ctx.write(helpText());
-    return 0;
+    throw new CliError(`Unknown command: ${first}`, 2);
   }
 
-  return dispatch(command, ctx);
-}
-
-function dispatch(command: string, ctx: CliContext): number {
-  switch (command) {
-    default:
-      return failWithUsage(ctx, `Unknown command: ${command}`);
-  }
-}
-
-function parseArguments(argv: readonly string[]): ParseOutcome {
-  try {
-    const { values, positionals } = parseArgs({
-      args: [...argv],
-      options: {
-        help: { type: "boolean", short: "h" },
-        version: { type: "boolean", short: "v" },
-      },
-      strict: true,
-      allowPositionals: true,
-    });
-
-    return { ok: true, invocation: { values, positionals } };
-  } catch (error) {
-    return { ok: false, message: describeError(error) };
-  }
-}
-
-function failWithUsage(ctx: CliContext, message: string): number {
-  ctx.writeError(`error: ${message}\n\n${helpText()}`);
-  return 2;
+  return await command.run(rest, ctx);
 }
 
 function describeError(error: unknown): string {

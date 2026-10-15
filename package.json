@@ -17,8 +17,15 @@
     "raulmoracode-ai-config": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "keywords": [
     "opencode",
@@ -27,7 +34,9 @@
     "ai-agents"
   ],
   "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
     "@types/node": "^24.19.2",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.4"
   }
 }

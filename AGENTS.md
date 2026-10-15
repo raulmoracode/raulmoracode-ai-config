@@ -19,8 +19,9 @@ refresh; this CLI never re-implements any of that.
   configuration with `jsonc-parser`; never by naive string replacement or by
   re-serializing a parsed object.
 - `doctor` is read-only. `--help` and `--version` must work without network access.
-- Production dependencies are kept to a minimum: currently only `jsonc-parser` (safe
-  JSONC editing). Adding another requires a clear technical justification.
+- Production dependencies are kept to a minimum: `jsonc-parser` (safe JSONC editing) and
+  `@clack/prompts` (interactive terminal UI with a plain-text fallback for non-interactive
+  environments). Adding another requires a clear technical justification.
 - Never execute content downloaded from the remote catalog.
 - Treat remote catalog responses as untrusted input: validate shape, types and paths
   before using them.
@@ -49,6 +50,7 @@ refresh; this CLI never re-implements any of that.
 - `src/opencode/` — OpenCode config path detection and JSONC-safe reading/editing.
 - `src/catalog/` — HTTP client and strict validation for the remote catalog.
 - `src/commands/` — one module per CLI command (`init`, `skills`, `doctor`, menu).
+- `src/ui/` — interactive terminal UI (Clack) with a plain-text fallback, injected into commands.
 - `test/` — Vitest suites mirroring `src/`.
 
 ## Commands

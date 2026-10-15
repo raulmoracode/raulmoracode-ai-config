@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lint, format, typecheck, test, build and a combined check.
 - CLI entry point with `--help` and `--version`, usage-error exit codes and automated
   tests.
+- Interactive terminal UI layer built on `@clack/prompts` with a plain-text fallback for
+  non-interactive environments; commands receive it through their execution context.
 - Repository guides: `AGENTS.md` and this changelog.
 
 ### Changed

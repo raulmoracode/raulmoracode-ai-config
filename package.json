@@ -1,0 +1,33 @@
+{
+  "name": "@raulmoracode/ai-config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Configure OpenCode to consume a centralized library of remotely hosted skills",
+  "license": "MIT",
+  "author": "Raúl Mora (raulmoracode)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raulmoracode/raulmoracode-ai-config.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "bin": {
+    "raulmoracode-ai-config": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "opencode",
+    "skills",
+    "cli",
+    "ai-agents"
+  ],
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2"
+  }
+}

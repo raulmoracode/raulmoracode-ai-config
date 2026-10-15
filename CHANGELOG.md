@@ -14,3 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI entry point with `--help` and `--version`, usage-error exit codes and automated
   tests.
 - Repository guides: `AGENTS.md` and this changelog.
+
+### Changed
+
+- Command handling now uses a registry-based dispatcher; commands are self-contained
+  modules with their own argument parsing, and the help text is derived from the
+  registry.

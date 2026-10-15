@@ -55,7 +55,7 @@ async function run(
   }
 
   const ui = createUi({ writers: ctx, interactive: options?.interactive ?? detectInteractive() });
-  return await command.run(rest, { ui });
+  return await command.run(rest, { ui, writers: ctx });
 }
 
 function describeError(error: unknown): string {

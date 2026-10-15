@@ -1,3 +1,4 @@
+import { createUi, detectInteractive } from "../ui/ui.js";
 import { readPackageVersion } from "../version.js";
 import type { CliContext } from "./context.js";
 import { CliError } from "./errors.js";
@@ -6,9 +7,13 @@ import { commands } from "./registry.js";
 
 export type { CliContext } from "./context.js";
 
-export async function main(argv: readonly string[], ctx: CliContext): Promise<number> {
+export async function main(
+  argv: readonly string[],
+  ctx: CliContext,
+  options?: { interactive?: boolean },
+): Promise<number> {
   try {
-    return await run(argv, ctx);
+    return await run(argv, ctx, options);
   } catch (error) {
     if (error instanceof CliError) {
       ctx.writeError(`error: ${error.message}\n`);
@@ -23,7 +28,11 @@ export async function main(argv: readonly string[], ctx: CliContext): Promise<nu
   }
 }
 
-async function run(argv: readonly string[], ctx: CliContext): Promise<number> {
+async function run(
+  argv: readonly string[],
+  ctx: CliContext,
+  options?: { interactive?: boolean },
+): Promise<number> {
   const [first, ...rest] = argv;
 
   if (first === undefined || first === "--help" || first === "-h") {
@@ -45,7 +54,8 @@ async function run(argv: readonly string[], ctx: CliContext): Promise<number> {
     throw new CliError(`Unknown command: ${first}`, 2);
   }
 
-  return await command.run(rest, ctx);
+  const ui = createUi({ writers: ctx, interactive: options?.interactive ?? detectInteractive() });
+  return await command.run(rest, { ui });
 }
 
 function describeError(error: unknown): string {

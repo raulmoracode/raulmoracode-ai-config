@@ -1,4 +1,9 @@
-import type { CliContext } from "./context.js";
+import type { Ui } from "../ui/ui.js";
+
+/** Everything a command needs from the surrounding CLI invocation. */
+export interface CommandContext {
+  ui: Ui;
+}
 
 /**
  * A single CLI command. `argv` contains the arguments that follow the command
@@ -7,5 +12,5 @@ import type { CliContext } from "./context.js";
 export interface Command {
   readonly name: string;
   readonly summary: string;
-  run(argv: readonly string[], ctx: CliContext): number | Promise<number>;
+  run(argv: readonly string[], context: CommandContext): number | Promise<number>;
 }

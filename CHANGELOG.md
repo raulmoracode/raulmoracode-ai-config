@@ -27,3 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command handling now uses a registry-based dispatcher; commands are self-contained
   modules with their own argument parsing, and the help text is derived from the
   registry.
+
+## [0.0.1] - 2026-10-16
+
+### Added
+
+- First npm release of `@raulmoracode/ai-config`.
+- Publish-safe package contents containing the built CLI and release metadata.

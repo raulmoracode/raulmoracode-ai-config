@@ -1,7 +1,6 @@
 {
   "name": "@raulmoracode/ai-config",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.0.1",
   "description": "Configure OpenCode to consume a centralized library of remotely hosted skills",
   "license": "MIT",
   "author": "Raúl Mora (raulmoracode)",
@@ -16,8 +15,15 @@
   "bin": {
     "raulmoracode-ai-config": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepack": "npm run build",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",

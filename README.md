@@ -8,24 +8,38 @@ skills; this CLI only edits OpenCode configuration and inspects the catalog.
 ## Usage
 
 ```sh
+# Run the CLI without a global installation.
+npx @raulmoracode/ai-config --help
+
 # Add the default HTTPS catalog to the project OpenCode config.
-npx raulmoracode-ai-config init
+npx @raulmoracode/ai-config init
 
 # Configure the global OpenCode config instead.
-npx raulmoracode-ai-config init --global
+npx @raulmoracode/ai-config init --global
 
 # Use another explicitly selected catalog URL.
-npx raulmoracode-ai-config init --url https://example.com/skills/
+npx @raulmoracode/ai-config init --url https://example.com/skills/
 
 # Inspect available, configured, and cached skills.
-npx raulmoracode-ai-config skills
-npx raulmoracode-ai-config skills --json
-npx raulmoracode-ai-config skills --version 1.2.0
+npx @raulmoracode/ai-config skills
+npx @raulmoracode/ai-config skills --json
+npx @raulmoracode/ai-config skills --version 1.2.0
 
 # Run read-only diagnostics.
-npx raulmoracode-ai-config doctor
-npx raulmoracode-ai-config doctor --global --json
+npx @raulmoracode/ai-config doctor
+npx @raulmoracode/ai-config doctor --global --json
 ```
+
+## Installation
+
+Install the CLI globally when you use it regularly:
+
+```sh
+npm install --global @raulmoracode/ai-config
+raulmoracode-ai-config --help
+```
+
+The first published release is `0.0.1`.
 
 The default catalog URL is
 `https://raulmoracode.github.io/raulmoracode-skills/`. Catalog indexes are

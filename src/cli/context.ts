@@ -5,4 +5,12 @@
 export interface CliContext {
   write(text: string): void;
   writeError(text: string): void;
+  runtime?: CliRuntime;
+}
+
+export interface CliRuntime {
+  cwd?: string;
+  home?: string;
+  env?: Record<string, string | undefined>;
+  fetchImpl?: typeof fetch;
 }

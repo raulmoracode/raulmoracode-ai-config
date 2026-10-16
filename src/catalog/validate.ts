@@ -1,4 +1,4 @@
-import type { Catalog, CatalogSkill } from "./types.js";
+import type { Catalog, CatalogSkill, CatalogVersion } from "./types.js";
 
 export type CatalogValidation = { ok: true; catalog: Catalog } | { ok: false; errors: string[] };
 
@@ -6,6 +6,8 @@ const SKILL_NAME_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const MAX_SKILL_NAME_LENGTH = 64;
 const TOP_LEVEL_KEYS: ReadonlySet<string> = new Set(["skills"]);
 const ENTRY_KEYS: ReadonlySet<string> = new Set(["name", "version", "files"]);
+const CATALOG_VERSION_PATTERN =
+  /^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 
 /**
  * True when `path` is a safe relative file path: non-empty, no leading `/`,
@@ -94,6 +96,37 @@ export function validateCatalog(value: unknown): CatalogValidation {
   }
 
   return { ok: true, catalog: { skills } };
+}
+
+export type CatalogVersionValidation =
+  | { ok: true; catalogVersion: CatalogVersion }
+  | { ok: false; errors: string[] };
+
+export function validateCatalogVersion(value: unknown): CatalogVersionValidation {
+  if (!isPlainObject(value)) {
+    return { ok: false, errors: ["catalog version: expected an object"] };
+  }
+
+  const errors: string[] = [];
+  for (const key of Object.keys(value)) {
+    if (key !== "version") {
+      errors.push(`catalog version: unknown key ${quote(key)}`);
+    }
+  }
+  const version = value.version;
+  if (!Object.hasOwn(value, "version")) {
+    errors.push('catalog version: missing required key "version"');
+  } else if (typeof version !== "string" || !CATALOG_VERSION_PATTERN.test(version)) {
+    errors.push('catalog version: "version" must be a semantic version string');
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, errors };
+  }
+  if (typeof version !== "string") {
+    return { ok: false, errors: ['catalog version: "version" must be a semantic version string'] };
+  }
+  return { ok: true, catalogVersion: { version } };
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

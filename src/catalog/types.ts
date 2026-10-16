@@ -15,3 +15,7 @@ export interface CatalogSkill {
 export interface Catalog {
   skills: CatalogSkill[];
 }
+
+export interface CatalogVersion {
+  version: string;
+}

@@ -60,3 +60,25 @@ skill paths. It adds the URL to the existing `skills` array (or the deprecated
 npm ci
 npm run check
 ```
+
+## Release
+
+The first public release is `0.0.1`. After merging the release-ready changes to
+`main`, configure npm trusted publishing for this repository and the
+`npm-release` GitHub environment, using `.github/workflows/npm-publish.yml` as
+the trusted workflow. The workflow uses GitHub Actions OIDC and does not use a
+long-lived npm token.
+
+Create and push the release tag from an up-to-date `main` checkout:
+
+```sh
+git checkout main
+git pull --ff-only origin main
+git tag -a v0.0.1 -m "Release v0.0.1"
+git push origin v0.0.1
+```
+
+The tag-triggered workflow verifies that the package version is exactly `0.0.1`,
+runs the full checks, confirms the version is not already published, inspects
+the package contents, and then publishes `@raulmoracode/ai-config` with npm
+provenance.

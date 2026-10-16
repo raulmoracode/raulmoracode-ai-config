@@ -39,6 +39,18 @@ export const doctorCommand: Command = {
         ok: true,
         detail: `${catalog.skills.length} skill(s) available`,
       });
+    } catch (error) {
+      checks.push({
+        name: "catalog",
+        ok: false,
+        detail: error instanceof Error ? error.message : String(error),
+      });
+    }
+    try {
+      const fetchOptions =
+        context.writers.runtime?.fetchImpl === undefined
+          ? {}
+          : { fetchImpl: context.writers.runtime.fetchImpl };
       const catalogVersion = await fetchCatalogVersion(options.url, fetchOptions);
       checks.push({
         name: "catalog-version",
@@ -47,7 +59,7 @@ export const doctorCommand: Command = {
       });
     } catch (error) {
       checks.push({
-        name: "catalog",
+        name: "catalog-version",
         ok: false,
         detail: error instanceof Error ? error.message : String(error),
       });

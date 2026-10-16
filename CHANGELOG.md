@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- End-to-end `init`, `skills`, and read-only `doctor` commands for configuring
+  and diagnosing OpenCode's HTTPS skills catalog integration.
+- Catalog version metadata validation and reporting through
+  `catalog-version.json`.
+- English CLI usage documentation and JSON output for scriptable inspection.
 - Project scaffold: TypeScript 7 (strict, NodeNext), Biome, Vitest and npm scripts for
   lint, format, typecheck, test, build and a combined check.
 - CLI entry point with `--help` and `--version`, usage-error exit codes and automated

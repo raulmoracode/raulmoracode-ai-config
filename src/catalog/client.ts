@@ -1,5 +1,5 @@
-import type { Catalog } from "./types.js";
-import { validateCatalog } from "./validate.js";
+import type { Catalog, CatalogVersion } from "./types.js";
+import { validateCatalog, validateCatalogVersion } from "./validate.js";
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_MAX_BYTES = 512 * 1024;
@@ -97,6 +97,41 @@ export async function fetchCatalog(
   }
 
   return validation.catalog;
+}
+
+export async function fetchCatalogVersion(
+  baseUrl: string,
+  options: FetchCatalogOptions = {},
+): Promise<CatalogVersion> {
+  const metadataUrl = new URL("catalog-version.json", normalizeBaseUrl(baseUrl));
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const maxBytes = options.maxBytes ?? DEFAULT_MAX_BYTES;
+
+  let response: Response;
+  try {
+    response = await fetchImpl(metadataUrl, { signal: AbortSignal.timeout(timeoutMs) });
+  } catch (error) {
+    throw new CatalogError(`failed to fetch ${metadataUrl.href}`, { cause: error });
+  }
+  if (!response.ok) {
+    throw new CatalogError(`failed to fetch ${metadataUrl.href}: HTTP ${response.status}`);
+  }
+  const text = await readBody(response, metadataUrl.href, maxBytes);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    throw new CatalogError(`catalog version at ${metadataUrl.href} is not valid JSON`, {
+      cause: error,
+    });
+  }
+  const validation = validateCatalogVersion(parsed);
+  if (!validation.ok) {
+    const details = validation.errors.map((error) => `  - ${error}`).join("\n");
+    throw new CatalogError(`catalog version at ${metadataUrl.href} is invalid:\n${details}`);
+  }
+  return validation.catalogVersion;
 }
 
 function oversizedMessage(url: string, maxBytes: number): string {

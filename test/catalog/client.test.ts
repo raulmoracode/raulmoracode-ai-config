@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, type Mock, vi } from "vitest";
-import { CatalogError, fetchCatalog, normalizeBaseUrl } from "../../src/catalog/client.js";
+import {
+  CatalogError,
+  fetchCatalog,
+  fetchCatalogVersion,
+  normalizeBaseUrl,
+} from "../../src/catalog/client.js";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -65,6 +70,25 @@ describe("fetchCatalog", () => {
     const [input, init] = fetchMock.mock.calls[0] ?? [];
     expect(input?.toString()).toBe(indexUrl);
     expect(init?.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  describe("fetchCatalogVersion", () => {
+    it("fetches and validates catalog-version.json", async () => {
+      const fetchMock = stubFetch(async () => new Response(JSON.stringify({ version: "1.0.1" })));
+
+      await expect(fetchCatalogVersion(baseUrl)).resolves.toEqual({ version: "1.0.1" });
+      expect(fetchMock.mock.calls[0]?.[0]?.toString()).toBe(
+        "https://catalog.test/base/catalog-version.json",
+      );
+    });
+
+    it("rejects malformed metadata", async () => {
+      stubFetch(async () => new Response(JSON.stringify({ version: "latest" })));
+
+      await expect(fetchCatalogVersion(baseUrl)).rejects.toThrow(
+        'version" must be a semantic version string',
+      );
+    });
   });
 
   it("prefers the provided fetch implementation over the global one", async () => {
